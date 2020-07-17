@@ -1,0 +1,69 @@
+#Loading Dataset
+data<-calories_consumed
+
+#data type
+mode(data)
+
+#Data plot
+plot(data,xlab='Weight Gained',ylab='Calories Consumed',type='l',col='cyan')
+
+#CORRELATION
+
+cor(data)
+
+> cor(data)
+                      Weight gained (grams) Calories Consumed
+Weight gained (grams)              1.000000          0.946991
+Calories Consumed                  0.946991          1.000000
+
+# DATASET SPLITTING
+
+split<-sample.split(data$`Weight gained (grams)`,SplitRatio = 0.8)
+train<-subset(data,split==TRUE)
+test<-subset(data,split==FALSE)
+
+#LINEAR MODEL BUILDING
+
+model_linear<-lm(data$`Weight gained (grams)`~data$`Calories Consumed`,train)
+summary(model_linear)
+
+> summary(model_linear)
+
+Call:
+lm(formula = data$`Weight gained (grams)` ~ data$`Calories Consumed`, 
+    data = train)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-158.67 -107.56   36.70   81.68  165.53 
+
+Coefficients:
+                           Estimate Std. Error t value Pr(>|t|)    
+(Intercept)              -625.75236  100.82293  -6.206 4.54e-05 ***
+data$`Calories Consumed`    0.42016    0.04115  10.211 2.86e-07 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 111.6 on 12 degrees of freedom
+Multiple R-squared:  0.8968,	Adjusted R-squared:  0.8882 
+F-statistic: 104.3 on 1 and 12 DF,  p-value: 2.856e-07
+
+#PREDICTION
+prediction<-predict(model_linear,data = test)
+prediction
+
+> prediction
+          1           2           3           4           5 
+   4.482599  340.607908  802.780209  298.592245  424.639236 
+          6           7           8           9          10 
+  46.498263  -37.533065  172.545254  550.686227 1012.858527 
+         11          12          13          14 
+  75.909227  172.545254  508.670563  634.717554
+
+#Prediction plotting
+plot(data$`Weight gained (grams)`,type='l',col='blue',main='Actual Weight Vs Predicted Weight')
+lines(prediction,col='green')
+
+#New dataframe
+error_chart<-data.frame(Actual=data$`Weight gained (grams)`,Predicted=prediction,
+                           "error"=data$`Weight gained (grams)`-prediction)
